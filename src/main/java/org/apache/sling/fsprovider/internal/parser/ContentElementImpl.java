@@ -18,20 +18,26 @@
  */
 package org.apache.sling.fsprovider.internal.parser;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 final class ContentElementImpl implements ContentElement {
-    
+
     private final String name;
     private final Map<String, Object> properties;
     private final Map<String, ContentElement> children = new LinkedHashMap<>();
-    
+    private String absoluteFilePath;
+
     public ContentElementImpl(String name, Map<String, Object> properties) {
+        this(name, properties, null);
+    }
+
+    public ContentElementImpl(String name, Map<String, Object> properties, final String absoluteFilePath) {
         this.name = name;
         this.properties = properties;
+        this.absoluteFilePath = absoluteFilePath;
     }
 
     @Override
@@ -54,15 +60,18 @@ final class ContentElementImpl implements ContentElement {
         String name = StringUtils.substringBefore(path, "/");
         ContentElement child = children.get(name);
         if (child == null) {
-          return null;
+            return null;
         }
         String remainingPath = StringUtils.substringAfter(path, "/");
         if (StringUtils.isEmpty(remainingPath)) {
-          return child;
-        }
-        else {
-          return child.getChild(remainingPath);
+            return child;
+        } else {
+            return child.getChild(remainingPath);
         }
     }
 
+    @Override
+    public String getAbsoluteFilePath() {
+        return absoluteFilePath;
+    }
 }

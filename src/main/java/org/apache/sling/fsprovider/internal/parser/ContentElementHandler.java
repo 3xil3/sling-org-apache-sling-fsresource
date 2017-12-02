@@ -18,27 +18,31 @@
  */
 package org.apache.sling.fsprovider.internal.parser;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.jcr.contentparser.ContentHandler;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.jcr.contentparser.ContentHandler;
 
 /**
  * {@link ContentHandler} implementation that produces a tree of {@link ContentElement} items.
  */
 final class ContentElementHandler implements ContentHandler {
-    
+
+    private final String fileAbsolutePath;
     private ContentElement root;
-    private Pattern PATH_PATTERN = Pattern.compile("^((/[^/]+)*)(/([^/]+))$"); 
+    private Pattern PATH_PATTERN = Pattern.compile("^((/[^/]+)*)(/([^/]+))$");
+
+    public ContentElementHandler(final String fileAbsolutePath) {
+        this.fileAbsolutePath = fileAbsolutePath;
+    }
 
     @Override
     public void resource(String path, Map<String, Object> properties) {
         if (StringUtils.equals(path, "/")) {
             root = new ContentElementImpl(null, properties);
-        }
-        else {
+        } else {
             if (root == null) {
                 throw new RuntimeException("Root resource not set.");
             }
@@ -51,8 +55,7 @@ final class ContentElementHandler implements ContentHandler {
             ContentElement parent;
             if (StringUtils.isEmpty(relativeParentPath)) {
                 parent = root;
-            }
-            else {
+            } else {
                 parent = root.getChild(relativeParentPath);
             }
             if (parent == null) {
@@ -61,9 +64,8 @@ final class ContentElementHandler implements ContentHandler {
             parent.getChildren().put(name, new ContentElementImpl(name, properties));
         }
     }
-    
+
     public ContentElement getRoot() {
         return root;
     }
-
 }

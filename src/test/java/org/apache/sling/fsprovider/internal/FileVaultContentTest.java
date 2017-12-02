@@ -18,20 +18,7 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
+import com.google.common.collect.ImmutableList;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -39,11 +26,19 @@ import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
+import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.util.List;
+
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.junit.Assert.*;
 
 /**
  * Test access FileFault XML files, folders and content.
@@ -55,19 +50,19 @@ public class FileVaultContentTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin(
-                "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
-                "provider.file", "src/test/resources/vaultfs-test/jcr_root",
-                "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
-                "provider.root", "/content/dam/talk.png"
-                ))
-        .plugin(new RegisterFsResourcePlugin(
-                "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
-                "provider.file", "src/test/resources/vaultfs-test/jcr_root",
-                "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
-                "provider.root", "/content/samples"
-                ))
-        .build();
+            .plugin(new RegisterFsResourcePlugin(
+                    "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
+                    "provider.file", "src/test/resources/vaultfs-test/jcr_root",
+                    "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
+                    "provider.root", "/content/dam/talk.png"
+            ))
+            .plugin(new RegisterFsResourcePlugin(
+                    "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
+                    "provider.file", "src/test/resources/vaultfs-test/jcr_root",
+                    "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
+                    "provider.root", "/content/samples"
+            ))
+            .build();
 
     @Before
     public void setUp() {
@@ -79,16 +74,16 @@ public class FileVaultContentTest {
     public void testDamAsset() {
         assertNotNull(damAsset);
         assertEquals("app:Asset", damAsset.getResourceType());
-        
+
         Resource content = damAsset.getChild("jcr:content");
         assertNotNull(content);
         assertEquals("app:AssetContent", content.getResourceType());
-        
+
         Resource metadata = content.getChild("metadata");
         assertNotNull(metadata);
         ValueMap props = metadata.getValueMap();
-        assertEquals((Integer)4, props.get("app:Bitsperpixel", Integer.class));
-        
+        assertEquals((Integer) 4, props.get("app:Bitsperpixel", Integer.class));
+
         assertFolder(content, "renditions");
         assertFile(content, "renditions/original", null);
         assertFile(content, "renditions/web.1280.1280.png", null);
@@ -100,7 +95,7 @@ public class FileVaultContentTest {
         assertEquals("sling:OrderedFolder", sampleContent.getResourceType());
 
         Resource enContent = sampleContent.getChild("en/jcr:content");
-        assertArrayEquals(new String[] { "/etc/mobile/groups/responsive" }, enContent.getValueMap().get("app:deviceGroups", String[].class));
+        assertArrayEquals(new String[]{"/etc/mobile/groups/responsive"}, enContent.getValueMap().get("app:deviceGroups", String[].class));
     }
 
     @Test
@@ -108,18 +103,18 @@ public class FileVaultContentTest {
         Resource en = sampleContent.getChild("en");
         List<Resource> children = ImmutableList.copyOf(en.listChildren());
         assertEquals(3, children.size());
-        
+
         Resource child1 = children.get(0);
         assertEquals("jcr:content", child1.getName());
         assertEquals("samples/sample-app/components/content/page/homepage", child1.getResourceType());
- 
+
         Resource child2 = children.get(1);
         assertEquals("tools", child2.getName());
         assertEquals("app:Page", child2.getResourceType());
-        
+
         Resource child3 = children.get(2);
         assertEquals("extra", child3.getName());
-        
+
         // another child (conference) is hidden because of filter
     }
 
@@ -133,13 +128,13 @@ public class FileVaultContentTest {
         Node conference = en.addNode("conference", "nt:folder");
         conference.addNode("page2", "nt:folder");
         samples.addNode("it", "nt:folder");
-        
+
         // pass-through because of filter
         assertNotNull(context.resourceResolver().getResource("/content/samples/en/conference"));
         assertNotNull(sampleContent.getChild("en/conference"));
         assertNotNull(context.resourceResolver().getResource("/content/samples/en/conference/page2"));
         assertNotNull(sampleContent.getChild("en/conference/page2"));
-        
+
         // hidden because overlayed by resource provider
         assertNull(context.resourceResolver().getResource("/content/samples/it"));
         assertNull(sampleContent.getChild("it"));
@@ -154,7 +149,7 @@ public class FileVaultContentTest {
         Resource extraContent = sampleContent.getChild("en/extra/extracontent");
         assertNotNull(extraContent);
         assertEquals("apps/app1/components/comp1", extraContent.getResourceType());
-        
+
         Resource layout = extraContent.getChild("layout");
         assertNotNull(layout);
         assertEquals("apps/app1/components/comp2", layout.getResourceType());
@@ -163,5 +158,4 @@ public class FileVaultContentTest {
         assertNotNull(binaryFile);
         assertEquals("nt:file", binaryFile.getResourceType());
     }
-    
 }

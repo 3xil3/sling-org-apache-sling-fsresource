@@ -62,6 +62,8 @@ public class FileMonitorTest {
                 tempDir.mkdirs();
                 File sourceDir = new File("src/test/resources/fs-test");
                 FileUtils.copyDirectory(sourceDir, tempDir);
+
+                context.registerInjectActivateService(new FsResourceCacheFlusherImpl());
                 
                 // mount temp. directory
                 context.registerInjectActivateService(new FsResourceProvider(),
