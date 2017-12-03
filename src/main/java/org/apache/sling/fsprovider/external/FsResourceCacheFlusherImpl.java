@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.fsprovider.internal;
+package org.apache.sling.fsprovider.external;
 
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.osgi.framework.Constants;

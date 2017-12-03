@@ -62,6 +62,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>org.apache.sling.fsprovider.external</Export-Package>
                         <!-- Embed Apache Johnzon and fscontentparser -->
                         <Embed-Dependency>
                             johnzon-core;scope=compile;inline=false,

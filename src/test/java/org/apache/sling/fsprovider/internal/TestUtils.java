@@ -25,6 +25,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.fsprovider.external.FsResourceCacheFlusher;
+import org.apache.sling.fsprovider.external.FsResourceCacheFlusherImpl;
 import org.apache.sling.fsprovider.internal.mapper.Escape;
 import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.osgi.MapUtil;

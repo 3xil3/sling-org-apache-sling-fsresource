@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.fsprovider.external.FsResourceCacheFlusherImpl;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
