@@ -41,7 +41,7 @@ final class ContentElementHandler implements ContentHandler {
     @Override
     public void resource(String path, Map<String, Object> properties) {
         if (StringUtils.equals(path, "/")) {
-            root = new ContentElementImpl(null, properties);
+            root = new ContentElementImpl(null, properties, fileAbsolutePath);
         } else {
             if (root == null) {
                 throw new RuntimeException("Root resource not set.");
@@ -61,7 +61,7 @@ final class ContentElementHandler implements ContentHandler {
             if (parent == null) {
                 throw new RuntimeException("Parent '" + relativeParentPath + "' does not exist.");
             }
-            parent.getChildren().put(name, new ContentElementImpl(name, properties));
+            parent.getChildren().put(name, new ContentElementImpl(name, properties, fileAbsolutePath));
         }
     }
 

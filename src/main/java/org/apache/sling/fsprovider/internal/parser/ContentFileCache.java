@@ -110,9 +110,13 @@ public final class ContentFileCache {
     public void refresh(final String path) {
         if (contentCache != null) {
             final ContentElement contentElement = contentCache.get(path);
-            
-            if (contentElement != null && contentElement.getAbsoluteFilePath() != null) {
-                addContentFromFileToCache(path, new File(contentElement.getAbsoluteFilePath()), null);
+
+            if (contentElement != null) {
+                if (contentElement.getAbsoluteFilePath() != null) {
+                    addContentFromFileToCache(path, new File(contentElement.getAbsoluteFilePath()), null);
+                } else {
+                    contentCache.remove(path);
+                }
             }
         }
     }
